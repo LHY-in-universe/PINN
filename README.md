@@ -52,5 +52,29 @@ $$ Loss_{Total} = w_1 Loss_{PDE} + w_2 Loss_{IC} + w_3 Loss_{BC} $$
 
 ### 3. 流体力学之痛 - Burgers' 方程激波捕捉 [`no_exact_pinn.ipynb`]
 这也是早期著名原发论文中的一个核心难点：求解带有极小黏滞系数下的一维黏性 Burgers' Equation（激波对流方程）。**这个强非线性强对流偏微分方程没有闭式的初等解析解**，属于数学界地狱级模拟难题，非常容易在数值模拟产生无穷大爆炸。
-为了严谨证明基于梯度的神经网络拥有攻克激波的本领且不是瞎猜出的结果，我们让代码和真正由流体力学高精度差分法耗时演算出来的绝对真集（Ground Truth 原数据位于从 Raissi 实验室下载的 `burgers_shock.mat` 中）同台竞技！
-这完美展示验证出了 PINN 极其惊艳的一个巨大优势 —— **在完全不需要去建立复杂高密度精细差分网格（Mesh）的情况下，以稀疏几千个随机数据打点，便能够精确捕获非线性流体的高陡尖锐激波（Shock front）断层。**
+为了严谨证明基于梯度的神经网络拥有攻克激波的本领且不是瞎猜出的结果，我们让代码和真正由流体力学高精度差分法耗时演算出来的绝对真集（Ground Truth 原数据位于从 Raissi 实验室下载的 `burgers_shock.mat` 中）同台竞技！这完美展示验证出了 PINN 极其惊艳的一个巨大优势 —— **在完全不需要去建立复杂高密度精细差分网格（Mesh）的情况下，以稀疏几千个随机数据打点，便能够精确捕获非线性流体的高陡尖锐激波（Shock front）断层。**
+
+### 4. 固体物理基石 - Kronig-Penney (KP) 模型 [`kp_pinn.ipynb`]
+进阶求解具有**周期性势场**的量子模型。在这个实验中，我们不仅要处理薛定谔方程，还要处理 Bloch 定理下的周期性边界条件。
+*   **技术亮点**：引入了 **周期性特征编码 (Periodic Feature Mapping)** —— 网络输入不再是原始坐标，而是经过三角函数映射后的特征。这在架构层面上强制保证了物理周期性，展示了如何将“物理对称性”深嵌套入神经网络设计的艺术。
+*   **解析对比**：通过数值解色散方程找到精确能级，并与解析波函数进行像素级重合对比，验证了 PINN 在复杂晶格势场中的可靠性。
+
+### 5. 原子世界的推演 - 氢原子轨道求解 [`hydrogen_pinn.ipynb`] & [`hydrogen_multistate_pinn.ipynb`]
+这是迈向三维真实物理系统的关键一步：求解氢原子的径向薛定谔方程。
+*   **挑战**：处理库仑势产生的 **坐标奇异性 ($1/r$)**。
+*   **多态演化**：在基态（1s）的基础上，更进一步实现了 **多态同时学习 (`multistate`)**。通过引入正交化 Loss 约束，成功让同一个神经网络自动分离出 1s, 2s, 3s 等不同的能级轨道，揭示了电子能级的量子化本质。
+
+---
+
+## 快速上手
+
+1. **环境准备**：
+   ```bash
+   pip install torch numpy matplotlib scipy
+   ```
+2. **运行实验**：
+   直接使用 Jupyter Notebook 或 VS Code 打开对应的 `.ipynb` 文件，顺序执行单元格即可。
+
+## 参考资料
+- Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. *Journal of Computational Physics*.
+- 更多物理模型的讨论欢迎在 Issues 中交流。
